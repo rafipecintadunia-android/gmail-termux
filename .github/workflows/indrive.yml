@@ -16,18 +16,33 @@ jobs:
           python-version: '3.11'
       - name: Kirim laporan order
         env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
         run: |
           pip install yagmail
-          python -c "
+          python -c '
           import yagmail, os, pathlib
-          log = pathlib.Path('indrive_orders.log')
-          body = log.read_text()[-4000:] if log.exists() else 'Tidak ada order baru'
-          if not body.strip():
-              body = 'Log kosong'
-          yag = yagmail.SMTP(os.environ['EMAIL_ADDRESS'], os.environ['EMAIL_PASSWORD'])
-          yag.send(to=os.environ['TO_EMAIL'], subject='🚗 Notifikasi inDrive Krembangan', contents=body)
-          print('Email terkirim!')
-          "
+          # Ambil user - support 2 nama secret
+          user = os.getenv("GMAIL_USER") or os.getenv("EMAIL_ADDRESS") or "rafipecintadunia@gmail.com"
+          pwd = os.getenv("GMAIL_APP_PASSWORD") or os.getenv("EMAIL_PASSWORD")
+          to = os.getenv("TO_EMAIL") or user
+
+          if not pwd:
+              print("ERROR: Secret GMAIL_APP_PASSWORD / EMAIL_PASSWORD belum di-set di GitHub!")
+              exit(1)
+
+          try:
+              isi = pathlib.Path("indrive_orders.log").read_text()[-3000:]
+              if not isi.strip():
+                  isi = "Belum ada order baru - standby di Krembangan"
+          except:
+              isi = "Belum ada log inDrive"
+
+          print(f"Kirim dari {user} ke {to}")
+          yag = yagmail.SMTP(user, pwd)
+          yag.send(to=to, subject="🚗 Order inDrive - Surabaya Krembangan", contents=f"Halo Rafi,\n\nAda update log inDrive:\n\n{isi}\n\nLokasi: Krembangan\nAkun: {user}")
+          print("Email terkirim SUCCESS!")
+          '
