@@ -1,0 +1,38 @@
+name: Notifikasi inDrive
+on:
+  push:
+    paths:
+      - 'indrive_orders.log'
+      - 'indrive_orders.json'
+  workflow_dispatch:
+
+jobs:
+  kirim-email:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Kirim laporan order
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        run: |
+          pip install yagmail
+          python -c '
+          import yagmail, os
+          user=os.getenv("GMAIL_USER")
+          pwd=os.getenv("GMAIL_APP_PASSWORD")
+          to=os.getenv("TO_EMAIL")
+          try:
+              with open("indrive_orders.log") as f:
+                  isi=f.read()[-2000:]
+          except:
+              isi="Belum ada log inDrive"
+          yag=yagmail.SMTP(user, pwd)
+          yag.send(to=to, subject="Order inDrive - Surabaya", contents=f"Halo Rafi, ada update log inDrive:\n\n{isi}\n\nLokasi: Krembangan")
+          print("Email terkirim!")
+          '
+
