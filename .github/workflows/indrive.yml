@@ -16,23 +16,18 @@ jobs:
           python-version: '3.11'
       - name: Kirim laporan order
         env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
         run: |
           pip install yagmail
-          python -c '
-          import yagmail, os
-          user=os.getenv("GMAIL_USER")
-          pwd=os.getenv("GMAIL_APP_PASSWORD")
-          to=os.getenv("TO_EMAIL")
-          try:
-              with open("indrive_orders.log") as f:
-                  isi=f.read()[-2000:]
-          except:
-              isi="Belum ada log inDrive"
-          yag=yagmail.SMTP(user, pwd)
-          yag.send(to=to, subject="Order inDrive - Surabaya", contents=f"Halo Rafi, ada update log inDrive:\n\n{isi}\n\nLokasi: Krembangan")
-          print("Email terkirim!")
-          '
-
+          python -c "
+          import yagmail, os, pathlib
+          log = pathlib.Path('indrive_orders.log')
+          body = log.read_text()[-4000:] if log.exists() else 'Tidak ada order baru'
+          if not body.strip():
+              body = 'Log kosong'
+          yag = yagmail.SMTP(os.environ['EMAIL_ADDRESS'], os.environ['EMAIL_PASSWORD'])
+          yag.send(to=os.environ['TO_EMAIL'], subject='🚗 Notifikasi inDrive Krembangan', contents=body)
+          print('Email terkirim!')
+          "
