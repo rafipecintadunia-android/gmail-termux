@@ -1,0 +1,19 @@
+name: Kirim Gmail Otomatis
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  kirim-email:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Kirim Email
+        run: python gmail_simple.py
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP: ${{ secrets.GMAIL_APP }}
+          GMAIL_TO: ${{ secrets.GMAIL_TO }}
