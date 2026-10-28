@@ -1,16 +1,14 @@
 [app]
-title = inDrive Logger Pamekasan
-package.name = indrivelogger
+title = Logger Pamekasan
+package.name = loggerpamekasan
 package.domain = com.pamekasan.logger
-
 source.dir = .
-source.include_exts = py,png,jpg,kv,json,log
+source.include_exts = py,png,jpg,kv,json
 version = 1.0
 requirements = python3,kivy
 orientation = portrait
+fullscreen = 0
+android.permissions = INTERNET
 
 [buildozer]
 log_level = 2
-
-[app]
-android.permissions = INTERNET,ACCESS_NETWORK_STATE
