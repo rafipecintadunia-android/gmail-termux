@@ -8,10 +8,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: pip install buildozer cython==0.29.33
-      - run: sudo apt update && sudo apt install -y openjdk-17-jdk zip unzip libffi-dev
-      - run: buildozer android debug
-      - uses: actions/upload-artifact@v4
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk python3-pip zip unzip libffi-dev libssl-dev
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33
+      - name: Build APK
+        run: |
+          yes | buildozer android debug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: APK-Pamekasan
           path: bin/*.apk
