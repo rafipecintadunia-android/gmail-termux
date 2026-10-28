@@ -1,0 +1,24 @@
+name: Build APK Pamekasan
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - name: Install deps
+        run: |
+          pip install buildozer cython
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk zip unzip
+      - name: Build
+        run: buildozer android debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: APK-Pamekasan
+          path: bin/*.apk
