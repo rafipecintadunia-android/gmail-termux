@@ -1,16 +1,19 @@
 [app]
-title = Logger Pamekasan
-package.name = loggerpamekasan
-package.domain = com.pamekasan.logger
+title = Gmail Pamekasan
+package.name = gmailpamekasan
+package.domain = com.pamekasan.gmail
+
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 1.0
+version = 0.1
 requirements = python3,kivy
 orientation = portrait
+fullscreen = 0
+
 [buildozer]
 log_level = 2
+
+# (android) 
 [app:android]
-android.api = 33
-android.minapi = 21
-android.ndk = 25b
-android.accept_sdk_license_agreement = True
+p4a.url = https://github.com/kivy/python-for-android
+p4a.branch = master
