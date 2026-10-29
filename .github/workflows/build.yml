@@ -2,7 +2,7 @@ name: Build APK Pamekasan
 on: [push, workflow_dispatch]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Setup Java 17
@@ -17,13 +17,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential git python3-pip python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libbz2-dev libssl-dev libffi-dev
+          sudo apt install -y build-essential git python3-pip python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libbz2-dev libssl-dev libffi-dev libncurses5-dev libsqlite3-dev
           pip install --upgrade pip
-          pip install buildozer cython==0.29.36 kivy
+          pip install "cython==0.29.36" buildozer
       - name: Build APK
-        run: yes | buildozer android debug
+        run: |
+          yes | buildozer -v android debug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: APK-Pamekasan
           path: bin/*.apk
+          if-no-files-found: warn
